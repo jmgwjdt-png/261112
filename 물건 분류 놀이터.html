@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>물건 분류 놀이터</title>
+<link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#fff7e6; --ink:#3a2a1a; --sub:#8a6f55; --card:#fff; --line:#f0dcb8;
+  --main:#e2552d; --main-d:#b93f1d; --ok:#2e9e5b; --no:#e0453a;
+  --c0:#3b82c4; --c1:#e8843a; --c2:#3aa776; --c3:#9a5fc9;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:'Jua','Apple SD Gothic Neo','Malgun Gothic',sans-serif;background:var(--bg);color:var(--ink);
+  background-image:radial-gradient(#fde9c2 2px,transparent 2px);background-size:28px 28px;
+  -webkit-tap-highlight-color:transparent;user-select:none}
+button{font-family:inherit;color:inherit;border:0;cursor:pointer;background:none}
+#app{max-width:1100px;margin:0 auto;padding:16px 16px 40px;min-height:100%}
+header{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+header h1{font-size:clamp(22px,4vw,34px);flex:1;line-height:1.2}
+.back{background:var(--card);border:3px solid var(--line);border-radius:999px;padding:8px 18px;font-size:18px}
+.back:active{transform:scale(.96)}
+.lead{font-size:clamp(17px,2.6vw,22px);color:var(--sub);margin-bottom:18px;line-height:1.5}
+
+/* 홈 */
+.hero{text-align:center;padding:24px 0 8px}
+.hero .big{font-size:clamp(34px,7vw,60px);color:var(--main);text-shadow:3px 3px 0 #ffd9a0}
+.hero p{font-size:clamp(17px,2.8vw,23px);color:var(--sub);margin-top:8px}
+.menu{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:18px;margin-top:26px}
+.menu button{background:var(--card);border:4px solid var(--line);border-radius:28px;padding:26px 20px;text-align:center;
+  box-shadow:0 6px 0 var(--line);transition:transform .1s}
+.menu button:active{transform:translateY(4px);box-shadow:0 2px 0 var(--line)}
+.menu .em{font-size:56px;display:block}
+.menu .t{font-size:27px;margin:8px 0 6px;display:block}
+.menu .d{font-size:17px;color:var(--sub);line-height:1.45;display:block}
+.menu .step{display:inline-block;background:var(--main);color:#fff;border-radius:999px;padding:3px 14px;font-size:16px}
+
+/* 물건 아이콘 */
+.ic{display:inline-flex;align-items:center;justify-content:center;width:1.25em;height:1.25em;line-height:1;vertical-align:middle}
+.ic svg{width:100%;height:100%}
+
+/* 기준 카드 */
+.crit{background:var(--card);border:4px solid var(--line);border-radius:24px;padding:18px;margin-bottom:16px}
+.crit h2{font-size:clamp(21px,3.4vw,28px);margin-bottom:12px}
+.crit h2 .n{display:inline-block;background:var(--main);color:#fff;border-radius:999px;width:1.5em;height:1.5em;line-height:1.5em;text-align:center;margin-right:8px;font-size:.85em}
+.groups{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
+.g{border-radius:16px;padding:12px;border:3px solid;background:#fff}
+.g .lab{font-size:19px;margin-bottom:8px}
+.g .its{display:flex;flex-wrap:wrap;gap:6px}
+.chip{background:#fff8ea;border:2px solid var(--line);border-radius:12px;padding:4px 8px;font-size:15px;display:flex;align-items:center;gap:4px}
+.chip .ic{font-size:24px}
+.go{margin-top:12px;background:var(--main);color:#fff;border-radius:999px;padding:10px 22px;font-size:19px;box-shadow:0 4px 0 var(--main-d)}
+.go:active{transform:translateY(3px);box-shadow:0 1px 0 var(--main-d)}
+
+.tip{background:#fff3c9;border:4px dashed #f2c45a;border-radius:24px;padding:18px;margin-bottom:18px}
+.tip h2{font-size:clamp(20px,3.2vw,26px);margin-bottom:6px}
+.tip p{font-size:18px;line-height:1.5;color:#6b5330}
+.ox{display:flex;align-items:center;gap:10px;background:#fff;border-radius:16px;padding:10px 12px;margin-top:10px;flex-wrap:wrap}
+.ox .s{flex:1;min-width:200px;font-size:19px;line-height:1.4}
+.ox button{width:52px;height:52px;border-radius:50%;font-size:26px;border:3px solid var(--line);background:#fff}
+.ox .fb{width:100%;font-size:17px;display:none}
+.ox.done .fb{display:block}
+.ox.done.right .fb{color:var(--ok)} .ox.done.wrong .fb{color:var(--no)}
+
+/* 기준 고르기 */
+.pick{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
+.pick button{background:var(--card);border:4px solid var(--line);border-radius:22px;padding:18px;text-align:left;box-shadow:0 5px 0 var(--line)}
+.pick button:active{transform:translateY(3px);box-shadow:0 2px 0 var(--line)}
+.pick .em{font-size:40px}
+.pick .q{font-size:22px;margin:6px 0 4px;display:block;line-height:1.3}
+.pick .c{font-size:16px;color:var(--sub);display:block}
+.pick .star{float:right;font-size:18px;color:#e7a600}
+
+/* 분류 놀이 */
+.bar{height:16px;background:#f5e3c0;border-radius:999px;overflow:hidden;margin-bottom:6px}
+.bar i{display:block;height:100%;background:var(--main);border-radius:999px;transition:width .3s}
+.cnt{text-align:right;color:var(--sub);font-size:17px;margin-bottom:8px}
+.qbox{text-align:center;font-size:clamp(22px,3.8vw,32px);margin-bottom:10px}
+.stage{display:flex;flex-direction:column;align-items:center;min-height:230px;justify-content:center}
+.item{background:var(--card);border:5px solid var(--main);border-radius:32px;padding:14px 34px 12px;text-align:center;box-shadow:0 8px 0 #f3c9a4}
+.item .ic{font-size:clamp(84px,15vw,128px)}
+.item .nm{font-size:clamp(24px,4vw,34px);margin-top:4px}
+.item.pop{animation:pop .35s}
+.item.shake{animation:shake .4s}
+.item.fly{animation:fly .35s forwards}
+@keyframes pop{from{transform:scale(.5);opacity:0}to{transform:scale(1);opacity:1}}
+@keyframes shake{20%{transform:translateX(-14px)}40%{transform:translateX(14px)}60%{transform:translateX(-9px)}80%{transform:translateX(9px)}}
+@keyframes fly{to{transform:translateY(90px) scale(.2);opacity:0}}
+.hint{min-height:58px;margin:10px 0;font-size:clamp(17px,2.6vw,21px);text-align:center;line-height:1.4;padding:0 8px}
+.hint.no{color:var(--no)} .hint.ok{color:var(--ok)}
+.baskets{display:grid;gap:12px}
+.baskets.n2{grid-template-columns:1fr 1fr}
+.baskets.n4{grid-template-columns:1fr 1fr}
+@media(min-width:800px){.baskets.n4{grid-template-columns:repeat(4,1fr)}}
+.bk{border:5px solid;border-radius:26px;background:#fff;padding:14px 10px;min-height:150px;text-align:center;transition:transform .1s}
+.bk:active{transform:scale(.97)}
+.bk .lab{font-size:clamp(19px,3vw,26px);line-height:1.25}
+.bk .em{font-size:36px;display:block}
+.bk .in{display:flex;flex-wrap:wrap;justify-content:center;gap:2px;margin-top:8px;min-height:36px}
+.bk .in .ic{font-size:32px}
+.bk.glow{animation:glow .5s}
+@keyframes glow{50%{transform:scale(1.05);box-shadow:0 0 0 8px rgba(46,158,91,.25)}}
+
+/* 결과 */
+.res{text-align:center;padding:10px 0}
+.res .stars{font-size:64px;letter-spacing:6px}
+.res h2{font-size:clamp(28px,5vw,42px);color:var(--main);margin:6px 0}
+.res p{font-size:21px;color:var(--sub);margin-bottom:16px}
+.btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:18px}
+.btn2{background:#fff;border:4px solid var(--line);border-radius:999px;padding:10px 22px;font-size:19px}
+
+/* 기준 맞히기 */
+.gg{display:grid;gap:12px;margin-bottom:16px}
+.gg.n2{grid-template-columns:1fr 1fr}
+.gg.n4{grid-template-columns:1fr 1fr}
+.gbox{border:5px solid;border-radius:24px;background:#fff;padding:12px;text-align:center}
+.gbox .lab{font-size:20px;margin-bottom:6px;min-height:26px}
+.gbox .its{display:flex;flex-wrap:wrap;justify-content:center;gap:8px}
+.gbox .one{font-size:15px;width:86px}
+.gbox .one .ic{font-size:50px;display:flex;margin:0 auto}
+.opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px}
+.opts button{background:#fff;border:4px solid var(--line);border-radius:18px;padding:14px;font-size:20px;line-height:1.3}
+.opts button.right{border-color:var(--ok);background:#e6f6ec}
+.opts button.wrong{border-color:var(--no);background:#fdeceb;opacity:.7}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+/* ---------- 물건 그림 (이모지가 없는 물건은 직접 그림) ---------- */
+const S=(b)=>`<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">${b}</svg>`;
+const SVG={
+ millstone:S('<ellipse cx="30" cy="46" rx="24" ry="9" fill="#6e6e6e"/><rect x="6" y="34" width="48" height="12" fill="#6e6e6e"/><ellipse cx="30" cy="34" rx="24" ry="9" fill="#9a9a9a"/><rect x="10" y="22" width="40" height="12" fill="#858585"/><ellipse cx="30" cy="22" rx="20" ry="7.5" fill="#b5b5b5"/><ellipse cx="30" cy="22" rx="5" ry="2" fill="#5a5a5a"/><rect x="44" y="6" width="6" height="18" rx="3" fill="#a9713d"/>'),
+ vacuum:S('<path d="M22 40 C10 30 14 10 30 10" fill="none" stroke="#777" stroke-width="5" stroke-linecap="round"/><rect x="24" y="6" width="6" height="42" rx="3" transform="rotate(-28 27 27)" fill="#888"/><rect x="2" y="50" width="20" height="7" rx="3" fill="#555"/><rect x="26" y="30" width="32" height="22" rx="10" fill="#e04b3a"/><circle cx="44" cy="41" r="6" fill="#fff"/><circle cx="44" cy="41" r="2.5" fill="#e04b3a"/><circle cx="34" cy="54" r="5" fill="#444"/><circle cx="52" cy="54" r="5" fill="#444"/>'),
+ agungi:S('<path d="M6 56 L12 26 H52 L58 56 Z" fill="#9d9d9d"/><path d="M22 56 V44 a10 10 0 0 1 20 0 V56 Z" fill="#3a2a22"/><path d="M32 54 c-7 0-8-7-3-11 c0 4 3 3 3-2 c5 4 8 13 0 13z" fill="#ff8a2a"/><path d="M14 26 a18 12 0 0 1 36 0 Z" fill="#333"/><rect x="29" y="8" width="6" height="5" rx="2" fill="#333"/>'),
+ heater:S('<rect x="10" y="8" width="44" height="44" rx="6" fill="#c8342c"/><rect x="16" y="14" width="32" height="30" rx="3" fill="#ffb347"/><g stroke="#c8342c" stroke-width="2.5"><path d="M22 14v30M28 14v30M34 14v30M40 14v30"/></g><rect x="6" y="52" width="52" height="6" rx="3" fill="#8f231d"/>'),
+ aircon:S('<rect x="4" y="12" width="56" height="24" rx="7" fill="#fff" stroke="#8aa0b4" stroke-width="3"/><rect x="10" y="27" width="44" height="4" rx="2" fill="#8aa0b4"/><circle cx="50" cy="20" r="2" fill="#4cc38a"/><g fill="none" stroke="#4aa8e8" stroke-width="3.5" stroke-linecap="round"><path d="M16 42 q-3 6 0 12"/><path d="M32 42 q-3 6 0 12"/><path d="M48 42 q-3 6 0 12"/></g>'),
+ woodfridge:S('<rect x="10" y="4" width="44" height="56" rx="3" fill="#8a5a33"/><rect x="14" y="8" width="36" height="12" fill="#6e4424"/><rect x="14" y="24" width="36" height="32" fill="#5b371c"/><rect x="20" y="36" width="18" height="16" rx="2" fill="#bfe6ff" stroke="#fff" stroke-width="2"/><circle cx="46" cy="14" r="2" fill="#e0b070"/>'),
+ icebox:S('<path d="M18 26 L30 6 H58 L50 26 Z" fill="#fff" stroke="#8ab6dc" stroke-width="3" stroke-linejoin="round"/><rect x="8" y="26" width="46" height="30" rx="5" fill="#4a9be0"/><rect x="8" y="26" width="46" height="8" rx="4" fill="#2f7fc4"/><circle cx="24" cy="24" r="8" fill="#2f8f4e"/><rect x="36" y="14" width="7" height="14" rx="3" fill="#ef6a4c"/><rect x="20" y="42" width="22" height="5" rx="2.5" fill="#fff"/>'),
+ fridge:S('<rect x="14" y="3" width="36" height="58" rx="5" fill="#f4f7fa" stroke="#93a4b5" stroke-width="3"/><path d="M14 26 H50" stroke="#93a4b5" stroke-width="3"/><rect x="20" y="12" width="4" height="9" rx="2" fill="#93a4b5"/><rect x="20" y="32" width="4" height="14" rx="2" fill="#93a4b5"/>'),
+ mixer:S('<path d="M18 6 H44 L40 36 H22 Z" fill="#d8f0ff" stroke="#7fb4d8" stroke-width="3" stroke-linejoin="round"/><path d="M44 12 h8 v14 h-9" fill="none" stroke="#e9a53a" stroke-width="4"/><circle cx="28" cy="24" r="5" fill="#f08a3c"/><circle cx="35" cy="18" r="4" fill="#e3443c"/><path d="M26 14 l3 -5" stroke="#3a9a52" stroke-width="3" stroke-linecap="round"/><path d="M16 60 L20 36 H42 L46 60 Z" fill="#f2a82e"/><circle cx="31" cy="48" r="5" fill="#e3443c"/>'),
+ gasrange:S('<rect x="4" y="22" width="56" height="34" rx="5" fill="#8fd49a" stroke="#4f9a5d" stroke-width="3"/><g stroke="#333" stroke-width="3.5" stroke-linecap="round"><path d="M12 20 h16M20 14 v10M14 15 l12 8M26 15 l-12 8"/><path d="M36 20 h16M44 14 v10M38 15 l12 8M50 15 l-12 8"/></g><circle cx="20" cy="42" r="5" fill="#444"/><circle cx="38" cy="42" r="5" fill="#444"/><rect x="48" y="44" width="6" height="6" fill="#3b82c4"/>')
+};
+const ITEMS={
+ toothbrush:['치약과 칫솔','🪥'], glue:['풀과 가위','✂️'], paper:['종이와 연필','📝'], broom:['빗자루와 쓰레받기','🧹'],
+ millstone:['맷돌'], vacuum:['청소기'], candle:['촛불','🕯️'], lamp:['전등','💡'],
+ heater:['전기난로'], aircon:['냉방기'], agungi:['아궁이'], ball:['공','⚽'],
+ woodfridge:['나무로 만든 냉장고'], computer:['노트북, 컴퓨터','💻'], bike:['자전거','🚲'], icebox:['얼음 상자'],
+ fridge:['냉장고'], mixer:['믹서기'], sunglasses:['색안경(선글라스)','🕶️'], camera:['카메라','📷'],
+ book:['책','📖'], gloves:['털장갑','🧤'], fan:['부채','🪭'], gasrange:['가스레인지']
+};
+const nm=k=>ITEMS[k][0];
+const ic=k=>`<span class="ic">${ITEMS[k][1]||SVG[k]}</span>`;
+
+/* ---------- 분류 기준 ---------- */
+const COL=['var(--c0)','var(--c1)','var(--c2)','var(--c3)'];
+const CRIT=[
+ {id:'elec',em:'🔌',q:'전기를 사용하나요?',
+  groups:[
+   {lab:'전기를 사용해요',em:'⚡',hint:'콘센트에 꽂거나 전지(배터리)가 있어야 움직여요.',items:['vacuum','lamp','heater','aircon','computer','fridge','mixer','camera']},
+   {lab:'전기를 사용하지 않아요',em:'🙅',hint:'전기가 없어도 쓸 수 있어요.',items:['toothbrush','glue','paper','broom','millstone','candle','agungi','ball','woodfridge','bike','icebox','sunglasses','book','gloves','fan','gasrange']}],
+  why:{gasrange:'가스레인지는 전기가 아니라 가스로 불을 켜요.',candle:'촛불은 전기가 아니라 불로 밝혀요.',woodfridge:'나무 냉장고는 전기 대신 얼음을 넣어서 시원하게 해요.'}},
+ {id:'era',em:'⏳',q:'옛날부터 쓰던 물건인가요, 요즘 새로 생긴 물건인가요?',
+  groups:[
+   {lab:'옛날부터 쓰던 물건',em:'🏯',hint:'할머니의 할머니 때에도 쓰던 물건이에요.',items:['millstone','candle','agungi','woodfridge','fan','broom']},
+   {lab:'요즘 새로 생긴 물건',em:'🏙️',hint:'옛날에는 없었고, 요즘 쓰는 물건이에요.',items:['mixer','lamp','gasrange','fridge','aircon','vacuum']}]},
+ {id:'season',em:'🌡️',q:'더울 때 쓰나요, 추울 때 쓰나요?',
+  groups:[
+   {lab:'더울 때 써요',em:'☀️',hint:'더운 여름에 시원하게 지내려고 써요.',items:['aircon','fan','icebox','sunglasses']},
+   {lab:'추울 때 써요',em:'⛄',hint:'추운 겨울에 따뜻하게 지내려고 써요.',items:['heater','gloves']}],
+  why:{sunglasses:'색안경은 햇빛이 강한 더운 날에 눈을 지켜 줘요.'}},
+ {id:'use',em:'🧺',q:'무엇을 할 때 쓰나요?',
+  groups:[
+   {lab:'청소할 때',em:'🧽',hint:'더러운 곳을 깨끗하게 할 때 써요.',items:['broom','vacuum']},
+   {lab:'음식을 만들 때',em:'🍳',hint:'음식 재료를 갈거나 익힐 때 써요.',items:['millstone','mixer','agungi','gasrange']},
+   {lab:'음식을 시원하게 둘 때',em:'🧊',hint:'음식이 상하지 않게 시원하게 넣어 둬요.',items:['woodfridge','icebox','fridge']},
+   {lab:'공부하거나 만들 때',em:'🎒',hint:'읽고, 쓰고, 오리고, 붙일 때 써요.',items:['paper','glue','book','computer']}]},
+ {id:'carry',em:'🎈',q:'들고 다닐 수 있나요?',
+  groups:[
+   {lab:'가벼워서 들고 다녀요',em:'🤲',hint:'가볍고 작아서 손에 들거나 가방에 넣을 수 있어요.',items:['toothbrush','glue','paper','ball','sunglasses','camera','book','gloves','fan','icebox']},
+   {lab:'한곳에 두고 써요',em:'🏠',hint:'크고 무거워서 한곳에 놓아두고 써요.',items:['fridge','woodfridge','aircon','agungi','gasrange','millstone']}],
+  why:{icebox:'얼음 상자는 손잡이를 잡고 소풍 갈 때 들고 가요.'}}
+];
+CRIT.forEach(c=>{c.map={};c.groups.forEach((g,i)=>g.items.forEach(k=>c.map[k]=i))});
+
+/* ---------- 도구 ---------- */
+const $=s=>document.querySelector(s), app=$('#app');
+const shuffle=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a};
+let stars={};try{stars=JSON.parse(localStorage.getItem('sortStars')||'{}')}catch(e){}
+const saveStars=()=>{try{localStorage.setItem('sortStars',JSON.stringify(stars))}catch(e){}};
+let actx;
+function beep(ok){try{actx=actx||new (window.AudioContext||window.webkitAudioContext)();
+  const t=actx.currentTime;(ok?[660,880]:[220,180]).forEach((f,i)=>{const o=actx.createOscillator(),g=actx.createGain();
+  o.type=ok?'sine':'square';o.frequency.value=f;g.gain.setValueAtTime(ok?.18:.07,t+i*.11);g.gain.exponentialRampToValueAtTime(.001,t+i*.11+.18);
+  o.connect(g).connect(actx.destination);o.start(t+i*.11);o.stop(t+i*.11+.2)})}catch(e){}}
+const head=(t,back)=>`<header><button class="back" onclick="${back}">← 뒤로</button><h1>${t}</h1></header>`;
+
+/* ---------- 홈 ---------- */
+function home(){
+ app.innerHTML=`<div class="hero"><div class="big">🧺 물건 분류 놀이터</div>
+ <p>물건 24개를 여러 가지 기준으로 나누어 보아요!</p></div>
+ <div class="menu">
+  <button onclick="learn()"><span class="step">첫째</span><span class="em">🔍</span><span class="t">기준 살펴보기</span><span class="d">물건을 나눌 수 있는<br>기준 5가지를 알아봐요</span></button>
+  <button onclick="pick()"><span class="step">둘째</span><span class="em">🧺</span><span class="t">분류 연습하기</span><span class="d">기준을 고르고<br>물건을 바구니에 담아요</span></button>
+  <button onclick="guessStart()"><span class="step">셋째</span><span class="em">🕵️</span><span class="t">기준 맞히기</span><span class="d">나누어진 물건을 보고<br>어떤 기준인지 맞혀요</span></button>
+ </div>`;
+}
+
+/* ---------- 기준 살펴보기 ---------- */
+const OX=[
+ ['전기를 쓰는 물건 / 안 쓰는 물건',true,'누가 나누어도 똑같이 나누어져요.'],
+ ['예쁜 물건 / 안 예쁜 물건',false,'사람마다 생각이 달라서 결과가 달라져요.'],
+ ['청소할 때 쓰는 물건 / 요리할 때 쓰는 물건',true,'쓰임새는 누가 봐도 같아요.'],
+ ['내가 좋아하는 물건 / 싫어하는 물건',false,'좋아하는 것은 사람마다 달라요.']
+];
+function learn(){
+ app.innerHTML=head('🔍 기준 살펴보기','home()')+
+ `<div class="tip"><h2>💡 좋은 기준은 누가 나누어도 결과가 같아요</h2>
+ <p>아래 기준은 좋은 기준일까요? ⭕ 또는 ❌를 눌러 보세요.</p>
+ ${OX.map((o,i)=>`<div class="ox" id="ox${i}"><span class="s">${o[0]}</span>
+ <button onclick="ox(${i},true)">⭕</button><button onclick="ox(${i},false)">❌</button><span class="fb"></span></div>`).join('')}</div>
+ <p class="lead">이 물건들은 아래와 같은 기준으로 나눌 수 있어요.</p>`+
+ CRIT.map((c,i)=>`<div class="crit"><h2><span class="n">${i+1}</span>${c.em} ${c.q}</h2>
+ <div class="groups">${c.groups.map((g,j)=>`<div class="g" style="border-color:${COL[j]}"><div class="lab" style="color:${COL[j]}">${g.em} ${g.lab}</div>
+ <div class="its">${g.items.map(k=>`<span class="chip">${ic(k)}${nm(k)}</span>`).join('')}</div></div>`).join('')}</div>
+ <button class="go" onclick="play('${c.id}')">이 기준으로 연습하기 ▶</button></div>`).join('');
+ scrollTo(0,0);
+}
+function ox(i,ans){const o=OX[i],el=$('#ox'+i),r=ans===o[1];beep(r);
+ el.className='ox done '+(r?'right':'wrong');
+ el.querySelector('.fb').textContent=(r?'맞았어요! ':'다시 생각해 봐요. ')+(o[1]?'좋은 기준이에요. ':'좋은 기준이 아니에요. ')+o[2];}
+
+/* ---------- 기준 고르기 ---------- */
+function pick(){
+ app.innerHTML=head('🧺 분류 연습하기','home()')+`<p class="lead">어떤 기준으로 나누어 볼까요?</p><div class="pick">`+
+ CRIT.map(c=>`<button onclick="play('${c.id}')"><span class="star">${'★'.repeat(stars[c.id]||0)}</span><span class="em">${c.em}</span>
+ <span class="q">${c.q}</span><span class="c">물건 ${Object.keys(c.map).length}개 · 바구니 ${c.groups.length}개</span></button>`).join('')+`</div>`;
+ scrollTo(0,0);
+}
+
+/* ---------- 분류 놀이 ---------- */
+let G;
+function play(id){
+ const c=CRIT.find(x=>x.id===id);
+ G={c,q:shuffle(Object.keys(c.map)),i:0,miss:0,tried:false,lock:false,bins:c.groups.map(()=>[])};
+ app.innerHTML=head(`${c.em} 분류 연습`,'pick()')+
+ `<div class="bar"><i id="pb"></i></div><div class="cnt" id="cnt"></div>
+ <div class="qbox">${c.q}</div>
+ <div class="stage"><div class="item" id="item"></div></div>
+ <div class="hint" id="hint"></div>
+ <div class="baskets n${c.groups.length}">${c.groups.map((g,j)=>`<button class="bk" id="bk${j}" style="border-color:${COL[j]}" onclick="drop(${j})">
+ <span class="em">${g.em}</span><span class="lab" style="color:${COL[j]}">${g.lab}</span><div class="in"></div></button>`).join('')}</div>`;
+ scrollTo(0,0);show();
+}
+function show(){
+ const k=G.q[G.i],el=$('#item');G.tried=false;G.lock=false;
+ el.className='item';void el.offsetWidth;el.className='item pop';
+ el.innerHTML=`${ic(k)}<div class="nm">${nm(k)}</div>`;
+ $('#pb').style.width=(G.i/G.q.length*100)+'%';
+ $('#cnt').textContent=`${G.i+1} / ${G.q.length}`;
+ const h=$('#hint');h.className='hint';h.textContent='알맞은 바구니를 눌러 보세요.';
+}
+function drop(j){
+ if(G.lock)return;
+ const k=G.q[G.i],ans=G.c.map[k],el=$('#item'),h=$('#hint'),g=G.c.groups[ans];
+ if(j===ans){
+  G.lock=true;beep(true);el.className='item fly';
+  h.className='hint ok';h.textContent='딩동댕! '+((G.c.why&&G.c.why[k])||g.hint);
+  const b=$('#bk'+j);b.querySelector('.in').insertAdjacentHTML('beforeend',ic(k));
+  b.classList.remove('glow');void b.offsetWidth;b.classList.add('glow');
+  setTimeout(()=>{G.i++;G.i<G.q.length?show():result()},G.tried?1700:1000);
+ }else{
+  beep(false);if(!G.tried){G.miss++;G.tried=true}
+  el.className='item';void el.offsetWidth;el.className='item shake';
+  h.className='hint no';h.textContent='다시 생각해 봐요! 힌트: '+((G.c.why&&G.c.why[k])||g.hint);
+ }
+}
+function result(){
+ const n=G.q.length,right=n-G.miss,st=G.miss===0?3:G.miss<=Math.max(1,n*.25)?2:1,c=G.c;
+ if(st>(stars[c.id]||0)){stars[c.id]=st;saveStars()}
+ app.innerHTML=head(`${c.em} 분류 완성!`,'pick()')+
+ `<div class="res"><div class="stars">${'⭐'.repeat(st)}</div>
+ <h2>${st===3?'완벽해요!':st===2?'참 잘했어요!':'끝까지 해냈어요!'}</h2>
+ <p>${n}개 중 ${right}개를 한 번에 맞혔어요.</p></div>
+ <div class="crit"><h2>${c.q}</h2><div class="groups">${c.groups.map((g,j)=>`<div class="g" style="border-color:${COL[j]}">
+ <div class="lab" style="color:${COL[j]}">${g.em} ${g.lab}</div><div class="its">${g.items.map(k=>`<span class="chip">${ic(k)}${nm(k)}</span>`).join('')}</div></div>`).join('')}</div></div>
+ <div class="btns"><button class="go" onclick="play('${c.id}')">한 번 더 ↻</button>
+ <button class="btn2" onclick="pick()">다른 기준 고르기</button><button class="btn2" onclick="guessStart()">기준 맞히기 하러 가기</button></div>`;
+ scrollTo(0,0);
+}
+
+/* ---------- 기준 맞히기 ---------- */
+let Q;
+function guessStart(){Q={order:shuffle(CRIT),i:0,score:0};guess()}
+function guess(){
+ const c=Q.order[Q.i],per=c.groups.length>2?2:3;
+ const shown=c.groups.map(g=>shuffle(g.items).slice(0,per));
+ // 보여 준 묶음이 다른 기준으로도 똑같이 나누어지면 그 기준도 정답으로 인정
+ Q.valid=CRIT.filter(o=>{const m=shown.map(s=>{const v=[...new Set(s.map(k=>o.map[k]))];return v.length===1&&v[0]!==undefined?v[0]:-1});
+  return !m.includes(-1)&&new Set(m).size===m.length}).map(o=>o.id);
+ Q.c=c;Q.tried=false;Q.done=false;
+ const names=['가','나','다','라'];
+ app.innerHTML=head('🕵️ 기준 맞히기','home()')+
+ `<div class="bar"><i style="width:${Q.i/Q.order.length*100}%"></i></div><div class="cnt">${Q.i+1} / ${Q.order.length}</div>
+ <div class="qbox">어떤 기준으로 나누었을까요?</div>
+ <div class="gg n${c.groups.length}">${shown.map((s,j)=>`<div class="gbox" style="border-color:${COL[j]}"><div class="lab" id="gl${j}" style="color:${COL[j]}">${names[j]} 모둠</div>
+ <div class="its">${s.map(k=>`<div class="one">${ic(k)}${nm(k)}</div>`).join('')}</div></div>`).join('')}</div>
+ <div class="hint" id="hint"></div>
+ <div class="opts">${shuffle(CRIT).map(o=>`<button id="op_${o.id}" onclick="answer('${o.id}')">${o.em} ${o.q}</button>`).join('')}</div>
+ <div class="btns" id="nx"></div>`;
+ scrollTo(0,0);
+}
+function answer(id){
+ if(Q.done)return;const h=$('#hint'),b=$('#op_'+id);
+ if(Q.valid.includes(id)){
+  Q.done=true;beep(true);b.classList.add('right');if(!Q.tried)Q.score++;
+  const c=CRIT.find(x=>x.id===id);
+  if(id===Q.c.id)c.groups.forEach((g,j)=>{$('#gl'+j).textContent=g.em+' '+g.lab});
+  h.className='hint ok';h.textContent=id===Q.c.id?'딩동댕! 기준을 잘 찾았어요.':'맞아요! 이 기준으로도 똑같이 나눌 수 있어요.';
+  $('#nx').innerHTML=`<button class="go" onclick="guessNext()">${Q.i+1<Q.order.length?'다음 문제 ▶':'결과 보기 ▶'}</button>`;
+ }else{
+  beep(false);Q.tried=true;b.classList.add('wrong');
+  h.className='hint no';h.textContent='이 기준으로 나누면 같은 모둠 물건이 서로 갈라져요. 다시 골라 봐요!';
+ }
+}
+function guessNext(){
+ Q.i++;if(Q.i<Q.order.length)return guess();
+ const n=Q.order.length,st=Q.score===n?3:Q.score>=n-2?2:1;
+ app.innerHTML=head('🕵️ 기준 맞히기','home()')+
+ `<div class="res"><div class="stars">${'⭐'.repeat(st)}</div><h2>${st===3?'기준 찾기 박사!':'참 잘했어요!'}</h2>
+ <p>${n}문제 중 ${Q.score}문제를 한 번에 맞혔어요.</p>
+ <div class="btns"><button class="go" onclick="guessStart()">한 번 더 ↻</button><button class="btn2" onclick="home()">처음으로</button></div></div>`;
+}
+home();
+</script>
+</body>
+</html>
